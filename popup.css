@@ -71,7 +71,7 @@ body {
   margin-bottom: 8px;
 }
 
-.row--gap {
+.payload-panel {
   margin-top: 8px;
 }
 
@@ -176,4 +176,31 @@ body {
 
 .status[data-kind="warn"] {
   color: lab(55% 12 55);
+}
+
+.toast {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  margin: 0;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--fg);
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: center;
+  box-shadow: 0 4px 18px color-mix(in lab, canvastext 12%, transparent);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1;
+}
+
+.toast.toast--visible {
+  opacity: 1;
+  transform: translateY(0);
 }

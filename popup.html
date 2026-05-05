@@ -20,21 +20,25 @@
     </section>
 
     <section class="panel">
-      <h2 class="panel__title">Export (active tab)</h2>
       <div class="row">
-        <button type="button" id="btn-export" class="btn btn--primary">Read localStorage</button>
+        <button type="button" id="btn-export" class="btn btn--primary">Export</button>
+        <button
+          type="button"
+          id="btn-toggle-payload"
+          class="btn"
+          aria-expanded="false"
+          aria-controls="payload-panel"
+        >
+          View payload
+        </button>
       </div>
-      <label class="label" for="export-json">Payload</label>
-      <textarea id="export-json" class="textarea" rows="10" spellcheck="false" placeholder='{"__meta":{…},"your_key":"…"}'></textarea>
-      <div class="row row--gap">
-        <button type="button" id="btn-copy-export" class="btn">Copy JSON</button>
-        <button type="button" id="btn-download-export" class="btn">Download JSON</button>
+      <div id="payload-panel" class="payload-panel" hidden>
+        <label class="label" for="export-json">Payload</label>
+        <textarea id="export-json" class="textarea" rows="10" spellcheck="false" placeholder='{"__meta":{…},"your_key":"…"}'></textarea>
       </div>
     </section>
 
     <section class="panel">
-      <h2 class="panel__title">Import (active tab)</h2>
-
       <fieldset class="fieldset">
         <legend class="legend">Mode</legend>
         <label class="radio">
@@ -55,13 +59,15 @@
       </label>
 
       <div class="row">
-        <button type="button" id="btn-import" class="btn btn--primary">Apply to active tab</button>
+        <button type="button" id="btn-import" class="btn btn--primary">Import</button>
       </div>
     </section>
 
     <footer class="footer">
       <p id="status" class="status" aria-live="polite"></p>
     </footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <script src="popup.js" type="module"></script>
   </body>

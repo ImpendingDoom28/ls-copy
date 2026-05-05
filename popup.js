@@ -12,8 +12,32 @@ async function getActiveTab() {
   return tab;
 }
 
+/** @type {ReturnType<typeof setTimeout> | null} */
+let toastHideTimer = null;
+/** @type {ReturnType<typeof setTimeout> | null} */
+let toastClearTimer = null;
+
+function showToast(message, durationMs = 2300) {
+  const el = $("toast");
+  if (toastHideTimer !== null) clearTimeout(toastHideTimer);
+  if (toastClearTimer !== null) clearTimeout(toastClearTimer);
+  el.textContent = message;
+  requestAnimationFrame(() => {
+    el.classList.add("toast--visible");
+  });
+  toastHideTimer = setTimeout(() => {
+    toastHideTimer = null;
+    el.classList.remove("toast--visible");
+    toastClearTimer = setTimeout(() => {
+      toastClearTimer = null;
+      el.textContent = "";
+    }, 200);
+  }, durationMs);
+}
+
 async function copyText(text) {
   await navigator.clipboard.writeText(text);
+  showToast("Copied to clipboard");
 }
 
 function setStatus(message, kind = "") {
@@ -107,16 +131,6 @@ function buildExportPayload(snapshot, tabUrl) {
   };
 }
 
-function downloadJson(filename, text) {
-  const blob = new Blob([text], { type: "application/json;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
 function selectedImportMode() {
   const sel = document.querySelector('input[name="import-mode"]:checked');
   return sel?.value === "replace" ? "replace" : "merge";
@@ -128,38 +142,26 @@ async function onExport() {
     const { tab, snapshot } = await readLocalStorageFromActiveTab();
     const payload = buildExportPayload(snapshot, tab.url || "");
     const text = JSON.stringify(payload, null, 2);
+    const keyCount = Object.keys(snapshot).length;
     $("export-json").value = text;
-    setStatus(`Exported ${Object.keys(snapshot).length} keys from this tab.`);
+    setStatus(`Exported ${keyCount} keys from this tab.`);
+    try {
+      await copyText(text);
+    } catch (copyErr) {
+      const msg = copyErr && copyErr.message ? copyErr.message : String(copyErr);
+      setStatus(`Exported ${keyCount} keys, but copy failed: ${msg}`, "error");
+    }
   } catch (e) {
     setStatus(String(e && e.message ? e.message : e), "error");
   }
 }
 
-async function onCopyExport() {
-  setStatus("");
-  const text = $("export-json").value.trim();
-  if (!text) {
-    setStatus("Nothing to copy — export first.", "error");
-    return;
-  }
-  try {
-    await copyText(text);
-    setStatus("Copied JSON to clipboard.");
-  } catch (e) {
-    setStatus(`Copy failed: ${e && e.message ? e.message : String(e)}`, "error");
-  }
-}
-
-function onDownloadExport() {
-  setStatus("");
-  const text = $("export-json").value.trim();
-  if (!text) {
-    setStatus("Nothing to download — export first.", "error");
-    return;
-  }
-  const stamp = new Date().toISOString().replaceAll(":", "-");
-  downloadJson(`localStorage-export-${stamp}.json`, text);
-  setStatus("Download started.");
+function syncPayloadPanelToggle() {
+  const panel = $("payload-panel");
+  const btn = $("btn-toggle-payload");
+  const open = !panel.hidden;
+  btn.setAttribute("aria-expanded", open ? "true" : "false");
+  btn.textContent = open ? "Hide payload" : "View payload";
 }
 
 function parseImportObject(text) {
@@ -225,10 +227,11 @@ document.addEventListener("DOMContentLoaded", () => {
   $("btn-export").addEventListener("click", () => {
     void onExport();
   });
-  $("btn-copy-export").addEventListener("click", () => {
-    void onCopyExport();
+  $("btn-toggle-payload").addEventListener("click", () => {
+    const panel = $("payload-panel");
+    panel.hidden = !panel.hidden;
+    syncPayloadPanelToggle();
   });
-  $("btn-download-export").addEventListener("click", onDownloadExport);
   $("btn-import").addEventListener("click", () => {
     void onImport();
   });
