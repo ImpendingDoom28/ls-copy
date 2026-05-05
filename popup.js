@@ -144,7 +144,6 @@ async function onExport() {
     const text = JSON.stringify(payload, null, 2);
     const keyCount = Object.keys(snapshot).length;
     $("export-json").value = text;
-    setStatus(`Exported ${keyCount} keys from this tab.`);
     try {
       await copyText(text);
     } catch (copyErr) {
@@ -179,9 +178,21 @@ function parseImportObject(text) {
 
 async function onImport() {
   setStatus("");
-  const raw = $("import-json").value.trim();
+  let raw;
+  try {
+    raw = (await navigator.clipboard.readText()).trim();
+  } catch (e) {
+    const name = e && e.name ? e.name : "";
+    if (name === "NotAllowedError") {
+      setStatus("Clipboard read was blocked. Allow clipboard access for this extension.", "error");
+      return;
+    }
+    setStatus(String(e && e.message ? e.message : e), "error");
+    return;
+  }
+
   if (!raw) {
-    setStatus("Paste JSON or choose a file first.", "error");
+    setStatus("Clipboard is empty. Export from the source tab first (copies JSON to the clipboard).", "error");
     return;
   }
 
@@ -208,21 +219,6 @@ async function onImport() {
   }
 }
 
-function onImportFileChange(ev) {
-  const input = ev.target;
-  const file = input.files?.[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    $("import-json").value = String(reader.result ?? "");
-    setStatus(`Loaded file: ${file.name}`);
-  };
-  reader.onerror = () => {
-    setStatus("Failed to read file.", "error");
-  };
-  reader.readAsText(file, "utf-8");
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   $("btn-export").addEventListener("click", () => {
     void onExport();
@@ -235,5 +231,4 @@ document.addEventListener("DOMContentLoaded", () => {
   $("btn-import").addEventListener("click", () => {
     void onImport();
   });
-  $("import-file").addEventListener("change", onImportFileChange);
 });

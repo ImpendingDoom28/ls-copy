@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "localStorage Copy",
+  "name": "Local Storage Copy",
   "version": "1.0.0",
-  "description": "Export and import page localStorage (two-tab flow).",
-  "permissions": ["scripting", "activeTab"],
+  "description": "Export and import data from local storage (two-tab flow).",
+  "permissions": ["scripting", "activeTab", "clipboardRead", "clipboardWrite"],
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "localStorage Copy",
+    "default_title": "Local Storage Copy",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",

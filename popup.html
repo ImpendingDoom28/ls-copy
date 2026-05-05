@@ -10,7 +10,8 @@
     <header class="header">
       <h1 class="title">Local Storage Copy</h1>
       <p class="subtitle">
-        Focus the <strong>source</strong> tab → Export. Then focus the <strong>target</strong> tab → Import.
+        Focus the <strong>source</strong> tab → <strong>Export</strong>. Focus the <strong>target</strong>
+        tab → <strong>Import</strong>
       </p>
     </header>
 
@@ -18,6 +19,10 @@
       <strong>Secrets warning:</strong> Exports can include tokens and session data. Treat files and clipboard
       contents like passwords. This extension does not send data to any server.
     </section>
+
+    <p class="status-wrapper">
+      <p id="status" class="status" aria-live="polite"></p>
+    </p>
 
     <section class="panel">
       <div class="row">
@@ -34,7 +39,7 @@
       </div>
       <div id="payload-panel" class="payload-panel" hidden>
         <label class="label" for="export-json">Payload</label>
-        <textarea id="export-json" class="textarea" rows="10" spellcheck="false" placeholder='{"__meta":{…},"your_key":"…"}'></textarea>
+        <textarea id="export-json" class="textarea" rows="8" spellcheck="false" placeholder='{"__meta":{…},"your_key":"…"}'></textarea>
       </div>
     </section>
 
@@ -51,21 +56,10 @@
         </label>
       </fieldset>
 
-      <label class="label" for="import-json">Paste JSON</label>
-      <textarea id="import-json" class="textarea" rows="8" spellcheck="false"></textarea>
-      <label class="label file-label">
-        <span class="file-label__text">Or choose file</span>
-        <input id="import-file" type="file" accept="application/json,.json" />
-      </label>
-
       <div class="row">
         <button type="button" id="btn-import" class="btn btn--primary">Import</button>
       </div>
     </section>
-
-    <footer class="footer">
-      <p id="status" class="status" aria-live="polite"></p>
-    </footer>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
