@@ -148,25 +148,6 @@ body {
   font-size: 12px;
 }
 
-.details {
-  margin: 0 0 10px;
-  border: 1px dashed var(--border);
-  border-radius: 8px;
-  padding: 8px 10px;
-}
-
-.details summary {
-  cursor: pointer;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.hint {
-  margin: 6px 0 0;
-  font-size: 11px;
-  color: var(--muted);
-}
-
 .file-label {
   display: block;
   margin-top: 8px;
@@ -195,13 +176,4 @@ body {
 
 .status[data-kind="warn"] {
   color: lab(55% 12 55);
-}
-
-.footer__hint {
-  margin: 0;
-}
-
-code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
 }

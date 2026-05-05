@@ -32,25 +32,6 @@ function stripMetaEntries(obj) {
   return out;
 }
 
-function applyKeyRegex(entries, patternRaw, replacementRaw) {
-  const pattern = patternRaw.trim();
-  if (!pattern) return entries;
-  let re;
-  try {
-    re = new RegExp(pattern, "g");
-  } catch (e) {
-    throw new Error(`Invalid regex: ${e && e.message ? e.message : String(e)}`);
-  }
-  const replacement = replacementRaw ?? "";
-  /** @type {Record<string, string>} */
-  const out = {};
-  for (const [k, v] of Object.entries(entries)) {
-    const nk = k.replace(re, replacement);
-    out[nk] = v;
-  }
-  return out;
-}
-
 async function readLocalStorageFromActiveTab() {
   const tab = await getActiveTab();
   if (!tab?.id) throw new Error("No active tab.");
@@ -204,11 +185,7 @@ async function onImport() {
 
   try {
     const parsed = parseImportObject(raw);
-    let entries = stripMetaEntries(parsed);
-
-    const regexPat = $("key-regex").value;
-    const regexRep = $("key-replacement").value;
-    entries = applyKeyRegex(entries, regexPat, regexRep);
+    const entries = stripMetaEntries(parsed);
 
     const replace = selectedImportMode() === "replace";
     const { errors } = await writeLocalStorageToActiveTab(entries, replace);

@@ -47,17 +47,6 @@
         </label>
       </fieldset>
 
-      <details class="details">
-        <summary>Advanced: key find/replace</summary>
-        <p class="hint">
-          Applied to <strong>keys only</strong> (not values). Pattern is a JavaScript regex body (no slashes).
-        </p>
-        <label class="label" for="key-regex">Regex pattern</label>
-        <input id="key-regex" class="input" type="text" placeholder='^oldPrefix_' autocomplete="off" />
-        <label class="label" for="key-replacement">Replacement string</label>
-        <input id="key-replacement" class="input" type="text" placeholder="newPrefix_" autocomplete="off" />
-      </details>
-
       <label class="label" for="import-json">Paste JSON</label>
       <textarea id="import-json" class="textarea" rows="8" spellcheck="false"></textarea>
       <label class="label file-label">
@@ -72,10 +61,6 @@
 
     <footer class="footer">
       <p id="status" class="status" aria-live="polite"></p>
-      <p class="hint footer__hint">
-        Restrict sites: narrow <code>host_permissions</code> in <code>manifest.json</code> instead of
-        <code>&lt;all_urls&gt;</code> if your team wants a smaller blast radius.
-      </p>
     </footer>
 
     <script src="popup.js" type="module"></script>
