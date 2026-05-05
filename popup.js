@@ -1,5 +1,7 @@
 const META_PREFIX_RE = /^__/;
 
+const STORAGE_KEY = "importMode";
+
 /* UTILS */
 function $(id) {
   const el = document.getElementById(id);
@@ -136,6 +138,28 @@ function selectedImportMode() {
   return sel?.value === "replace" ? "replace" : "merge";
 }
 
+async function loadImportMode() {
+  try {
+    const data = await chrome.storage.local.get(STORAGE_KEY);
+    const raw = data[STORAGE_KEY];
+    const mode = raw === "merge" || raw === "replace" ? raw : "merge";
+    const input = document.querySelector(`input[name="import-mode"][value="${mode}"]`);
+    if (input instanceof HTMLInputElement) input.checked = true;
+  } catch {
+    // keep DOM default
+  }
+}
+
+/** @param {"merge" | "replace"} mode */
+async function saveImportMode(mode) {
+  if (mode !== "merge" && mode !== "replace") return;
+  try {
+    await chrome.storage.local.set({ [STORAGE_KEY]: mode });
+  } catch {
+    // ignore
+  }
+}
+
 async function onExport() {
   setStatus("");
   try {
@@ -220,15 +244,27 @@ async function onImport() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  $("btn-export").addEventListener("click", () => {
-    void onExport();
-  });
-  $("btn-toggle-payload").addEventListener("click", () => {
-    const panel = $("payload-panel");
-    panel.hidden = !panel.hidden;
-    syncPayloadPanelToggle();
-  });
-  $("btn-import").addEventListener("click", () => {
-    void onImport();
-  });
+  void (async () => {
+    await loadImportMode();
+
+    $("btn-export").addEventListener("click", () => {
+      void onExport();
+    });
+    $("btn-toggle-payload").addEventListener("click", () => {
+      const panel = $("payload-panel");
+      panel.hidden = !panel.hidden;
+      syncPayloadPanelToggle();
+    });
+    $("btn-import").addEventListener("click", () => {
+      void onImport();
+    });
+
+    const modeFieldset = document.querySelector("fieldset.fieldset");
+    modeFieldset?.addEventListener("change", (e) => {
+      const t = e.target;
+      if (t instanceof HTMLInputElement && t.name === "import-mode") {
+        void saveImportMode(selectedImportMode());
+      }
+    });
+  })();
 });
